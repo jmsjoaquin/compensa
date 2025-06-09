@@ -8,35 +8,45 @@ const DAILY_TAX_PERCENTAGE = 0.05;
 
 export default function SalaryTrackerPage() {
   const today = new Date();
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const currentMonthDates = Array.from({ length: daysInMonth }, (_, i) => new Date(today.getFullYear(), today.getMonth(), i + 1));
 
   const [period, setPeriod] = useState("bimonthly");
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [dailyRate, setDailyRate] = useState<number>(0);
   const [timeLogs, setTimeLogs] = useState<{ [date: string]: { timeIn: string; timeOut: string } }>({});
   const [showTimeEditor, setShowTimeEditor] = useState(false);
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const currentMonthDates = Array.from({ length: daysInMonth }, (_, i) => new Date(viewYear, viewMonth, i + 1));
 
   const getWeekdaysInCurrentCutoff = () => {
     return currentMonthDates
       .filter(date => {
         const dateNum = date.getDate();
         const isWeekday = date.getDay() !== 0 && date.getDay() !== 6;
-        const isInCutoff = today.getDate() <= 15 ? dateNum <= 15 : dateNum > 15;
+        const isCurrentMonth = viewMonth === today.getMonth() && viewYear === today.getFullYear();
+        const isInCutoff = isCurrentMonth ? (today.getDate() <= 15 ? dateNum <= 15 : dateNum > 15) : false;
         return isWeekday && isInCutoff;
       })
       .map(date => format(date, "yyyy-MM-dd"));
   };
 
   useEffect(() => {
-    const weekdays = getWeekdaysInCurrentCutoff();
-    setSelectedDates(weekdays);
-    const defaultLogs: { [date: string]: { timeIn: string; timeOut: string } } = {};
-    weekdays.forEach(date => {
-      defaultLogs[date] = { timeIn: "07:00", timeOut: "16:00" };
-    });
-    setTimeLogs(defaultLogs);
-  }, []);
+    const isCurrentMonth = viewMonth === today.getMonth() && viewYear === today.getFullYear();
+    if (isCurrentMonth) {
+      const weekdays = getWeekdaysInCurrentCutoff();
+      setSelectedDates(weekdays);
+      const defaultLogs: { [date: string]: { timeIn: string; timeOut: string } } = {};
+      weekdays.forEach(date => {
+        defaultLogs[date] = { timeIn: "07:00", timeOut: "16:00" };
+      });
+      setTimeLogs(defaultLogs);
+    } else {
+      setSelectedDates([]);
+      setTimeLogs({});
+    }
+  }, [viewMonth, viewYear]);
 
   const toggleDate = (date: Date) => {
     const formatted = format(date, "yyyy-MM-dd");
@@ -65,22 +75,22 @@ export default function SalaryTrackerPage() {
   };
 
   const computeWorkedMinutes = (timeIn: string, timeOut: string) => {
-  if (!timeIn || !timeOut) return 0;
+    if (!timeIn || !timeOut) return 0;
 
-  try {
-    const inDate = new Date(`1970-01-01T${timeIn}:00`);
-    const outDate = new Date(`1970-01-01T${timeOut}:00`);
+    try {
+      const inDate = new Date(`1970-01-01T${timeIn}:00`);
+      const outDate = new Date(`1970-01-01T${timeOut}:00`);
 
-    if (isNaN(inDate.getTime()) || isNaN(outDate.getTime())) return 0;
+      if (isNaN(inDate.getTime()) || isNaN(outDate.getTime())) return 0;
 
-    const diffMs = outDate.getTime() - inDate.getTime();
-    const totalHours = diffMs / (1000 * 60 * 60);
-    const adjusted = Math.max(0, Math.min(totalHours - 1, 8));
-    return adjusted * 60;
-  } catch {
-    return 0;
-  }
-};
+      const diffMs = outDate.getTime() - inDate.getTime();
+      const totalHours = diffMs / (1000 * 60 * 60);
+      const adjusted = Math.max(0, Math.min(totalHours - 1, 8));
+      return adjusted * 60;
+    } catch {
+      return 0;
+    }
+  };
 
   const totalMinutes = selectedDates.reduce((sum, date) => {
     const log = timeLogs[date];
@@ -104,20 +114,35 @@ export default function SalaryTrackerPage() {
       <h1 className="text-2xl font-bold mb-4">🗓 Salary Tracker</h1>
 
       <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={() => {
-            const weekdays = getWeekdaysInCurrentCutoff();
-            setSelectedDates(weekdays);
-            const defaultLogs: { [date: string]: { timeIn: string; timeOut: string } } = {};
-            weekdays.forEach(date => {
-              defaultLogs[date] = { timeIn: "07:00", timeOut: "16:00" };
-            });
-            setTimeLogs(defaultLogs);
-          }}
-          className="text-blue-500 underline"
-        >
-          Reset to Weekday Cutoff
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => {
+              if (viewMonth === 0) {
+                setViewMonth(11);
+                setViewYear(viewYear - 1);
+              } else {
+                setViewMonth(viewMonth - 1);
+              }
+            }}
+            className="text-blue-500 underline"
+          >← Prev</button>
+
+          <span className="font-semibold">
+            {new Date(viewYear, viewMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </span>
+
+          <button
+            onClick={() => {
+              if (viewMonth === 11) {
+                setViewMonth(0);
+                setViewYear(viewYear + 1);
+              } else {
+                setViewMonth(viewMonth + 1);
+              }
+            }}
+            className="text-blue-500 underline"
+          >Next →</button>
+        </div>
 
         <button
           onClick={() => setShowTimeEditor(!showTimeEditor)}
