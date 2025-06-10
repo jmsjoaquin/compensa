@@ -32,7 +32,6 @@ class WorkLog(models.Model):
     date = models.DateField()
     time_in = models.TimeField()
     time_out = models.TimeField()
-    daily_rate = models.DecimalField(max_digits=10, decimal_places=2)
 
     def hours_worked(self):
         dt_in = datetime.combine(self.date, self.time_in)
@@ -41,7 +40,7 @@ class WorkLog(models.Model):
         return min(total_hours, 8)
 
     def hourly_rate(self):
-        return round(self.daily_rate / 8, 2)
+        return round(self.user.salary_per_day / 8, 2)  # 👈 pulled from user profile
 
     def per_minute_rate(self):
         return round(self.hourly_rate() / 60, 2)

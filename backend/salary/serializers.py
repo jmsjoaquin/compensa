@@ -14,7 +14,7 @@ class WorkLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkLog
         fields = [
-            'id', 'date', 'time_in', 'time_out', 'daily_rate',
+            'id', 'date', 'time_in', 'time_out',
             'hours_worked', 'hourly_rate', 'per_minute_rate', 'salary_earned'
         ]
         read_only_fields = [
@@ -26,17 +26,20 @@ class WorkLogSerializer(serializers.ModelSerializer):
         return obj.hours_worked()
 
     def get_hourly_rate(self, obj):
-        return obj.hourly_rate()
+        # Use salary_per_day from user's profile
+        return round(obj.user.salary_per_day / 8, 2) if obj.user.salary_per_day else 0
 
     def get_per_minute_rate(self, obj):
-        return obj.per_minute_rate()
+        hourly = self.get_hourly_rate(obj)
+        return round(hourly / 60, 2)
 
     def get_salary_earned(self, obj):
-        return obj.salary_earned()
+        return round(self.get_hours_worked(obj) * self.get_hourly_rate(obj), 2)
 
     def create(self, validated_data):
-        # Let the view pass the user explicitly to avoid duplication
+        # Let the view attach user before saving
         return WorkLog.objects.create(**validated_data)
+
 
 
 class SalaryRecordSerializer(serializers.ModelSerializer):

@@ -11,7 +11,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "username", "email", "password",
-            "first_name", "last_name", "job_type"
+            "first_name", "last_name", "job_type",
+            "salary_per_day"  # 👈 include here
         )
 
     def create(self, validated_data):
@@ -21,5 +22,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
             first_name=validated_data.get("first_name", ""),
             last_name=validated_data.get("last_name", ""),
-            job_type=validated_data.get("job_type")
+            job_type=validated_data.get("job_type"),
+            salary_per_day=validated_data.get("salary_per_day")  # 👈 include here
         )
