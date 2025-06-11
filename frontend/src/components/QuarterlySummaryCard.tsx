@@ -20,7 +20,7 @@ export default function QuarterlyTaxSummaryCard({ quarterData }: Props) {
   const [selectedQuarter, setSelectedQuarter] = useState<Quarter>('Q1');
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full transition-all duration-300">
+      <div className="bg-white/90 backdrop-blur-md border border-blue-100 rounded-3xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 space-y-6 max-w-sm">
       <h3 className="text-center text-gray-900 font-semibold text-sm mb-4">
         Quarterly Tax – {new Date().getFullYear()}
       </h3>

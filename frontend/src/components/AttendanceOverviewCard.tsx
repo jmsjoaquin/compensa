@@ -18,7 +18,7 @@ export default function AttendanceOverview({
   const percentText = Math.round(percent * 100);
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl p-6 space-y-6 max-w-sm mx-auto">
+      <div className="bg-white/90 backdrop-blur-md border border-blue-100 rounded-3xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 space-y-6 max-w-sm">
       {/* Header */}
       <div className="flex items-center gap-3">
         <span className="bg-blue-100 text-blue-600 p-2 rounded-lg inline-flex">
