@@ -9,7 +9,9 @@ export default function Navbar() {
   const tabs = [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Salary', path: '/salary' },
-    { label: 'Profile', path: '/profile' },
+    // { label: 'Tax', path: '/tax' },
+    { label: 'Deductions', path: '/profile' },
+    
   ];
 
   return (

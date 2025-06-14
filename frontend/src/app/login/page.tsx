@@ -127,23 +127,23 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <input
+              {/* <input
                 type="text"
                 placeholder="First Name"
                 className="border p-2 rounded"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
-              />
-              <input
+              /> */}
+              {/* <input
                 type="text"
                 placeholder="Last Name"
                 className="border p-2 rounded"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
-              />
-              <select
+              /> */}
+              {/* <select
                 className="border p-2 rounded"
                 value={jobType}
                 onChange={(e) => setJobType(e.target.value)}
@@ -153,7 +153,7 @@ export default function LoginPage() {
                 <option value="Freelancer">Freelancer</option>
                 <option value="JO">Job Order</option>
                 <option value="COS">Contract of Service</option>
-              </select>
+              </select> */}
               <input
                 type="password"
                 placeholder="Password"

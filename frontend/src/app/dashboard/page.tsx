@@ -133,7 +133,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Calendar Column */}
-              <div className="w-full xl:w-1/2 min-w-0 flex-1">
+              <div className="w-full xl:w-1/2 min-w-0 flex-1 h-[500px] xl:h-auto xl:flex-1">
               <CalendarGrid
                 currentMonthDates={currentMonthDates}
                 selectedDates={selectedDates}

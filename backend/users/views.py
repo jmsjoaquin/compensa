@@ -26,8 +26,10 @@ class RegisterView(APIView):
             return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from users.models import CustomUser
+
 class LoginView(APIView):
-    permission_classes = [AllowAny]  # 👈 Important: allow non-authenticated users
+    permission_classes = [AllowAny]
 
     def post(self, request):
         username = request.data.get("username")
@@ -40,5 +42,13 @@ class LoginView(APIView):
                 "message": "Login successful",
                 "token": token.key
             }, status=status.HTTP_200_OK)
+        
+        # Dev Debugging
+        try:
+            user_obj = CustomUser.objects.get(username=username)
+            if not user_obj.is_active:
+                return Response({"error": "User is inactive"}, status=401)
+        except CustomUser.DoesNotExist:
+            pass
 
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "Invalid credentials"}, status=401)
